@@ -20,7 +20,9 @@ function Blog() {
   };
 
   const handlestore = () => {
-    setStore([{ title: Title, data: Content },...Store]);
+    setStore([{ title: Title, data: Content }, ...Store]);
+    SetTitle("");
+    Setcontent("");
   };
 
   const deleteBlog = (index) => {
@@ -89,7 +91,7 @@ function Blog() {
             cursor: "pointer",
             color: "#33691E",
           }}>
-           Submit
+          Submit
         </button>
       </form>
 
