@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState, useRef, useEffect } from "react";
 
 function Blog() {
