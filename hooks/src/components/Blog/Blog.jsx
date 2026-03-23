@@ -1,11 +1,22 @@
 /** @format */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function Blog() {
   const [Title, SetTitle] = useState("");
   const [Content, Setcontent] = useState("");
   const [Store, setStore] = useState([]);
+  const titlefocus = useRef(null);
+  useEffect(() => {
+    titlefocus.current.focus();
+  }, []);
+  useEffect(() => {
+    if (Store.length > 0 && Store[0].title) {
+      document.title = Store[0].title;
+    } else {
+      document.title = "My Blog";
+    }
+  }, [Store]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,6 +24,7 @@ function Blog() {
 
   const handletitle = (e) => {
     SetTitle(e.target.value);
+    titlefocus.current.focus();
   };
 
   const handlecontent = (e) => {
@@ -51,6 +63,7 @@ function Blog() {
           rows='2'
           value={Title}
           onChange={handletitle}
+          ref={titlefocus}
           style={{
             width: "100%",
             padding: "10px",
