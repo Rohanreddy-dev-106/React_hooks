@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import {db} from "../firebase.init.js"
 
 function Blog() {
   const [Title, SetTitle] = useState("");
