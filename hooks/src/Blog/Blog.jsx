@@ -1,10 +1,19 @@
+/** @format */
+
 import { useState, useRef, useEffect } from "react";
-import {db} from "../firebase.init.js"
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../firebase.init.js";
 
 function Blog() {
   const [Title, SetTitle] = useState("");
   const [Content, Setcontent] = useState("");
-  const [Store, setStore] = useState([]);
+  const [Store, setStore] = useState([]);//ui array
   const titlefocus = useRef(null);
   useEffect(() => {
     titlefocus.current.focus();
@@ -16,6 +25,25 @@ function Blog() {
       document.title = "My Blog";
     }
   }, [Store]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "blogs"));
+        let blogsdata = snapshot.docs.map((d) => {
+          return {
+            id: d.id,
+            ...d.data(),
+          };
+        });
+        console.log(blogsdata);
+        setStore(blogsdata);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,14 +58,25 @@ function Blog() {
     Setcontent(e.target.value);
   };
 
-  const handlestore = () => {
-    setStore([{ title: Title, data: Content }, ...Store]);
+  const handlestore = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "blogs"), {
+        title: Title,
+        data: Content,
+        createdAt: new Date(),
+      });
+      setStore([{ id: docRef.id, title: Title, data: Content }, ...Store]);
+      console.log("Document written with ID: ", docRef);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
     SetTitle("");
     Setcontent("");
   };
 
-  const deleteBlog = (index) => {
-    const copy = [...Store];
+  const deleteBlog = async (id, index) => {
+    await deleteDoc(doc(db, "blogs", id));
+    const copy = [...Store];//for ui
     copy.splice(index, 1);
     setStore(copy);
   };
@@ -132,7 +171,7 @@ function Blog() {
             </div>
 
             <span
-              onClick={() => deleteBlog(index)}
+              onClick={() => deleteBlog(value.id, index)}//db,ui
               style={{
                 cursor: "pointer",
                 color: "#D32F2F",
