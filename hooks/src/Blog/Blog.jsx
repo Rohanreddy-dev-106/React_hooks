@@ -6,7 +6,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc,
+  doc,onSnapshot
 } from "firebase/firestore";
 import { db } from "../firebase.init.js";
 
@@ -25,24 +25,37 @@ function Blog() {
       document.title = "My Blog";
     }
   }, [Store]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "blogs"));
-        let blogsdata = snapshot.docs.map((d) => {
-          return {
-            id: d.id,
-            ...d.data(),
-          };
-        });
-        console.log(blogsdata);
-        setStore(blogsdata);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const snapshot = await getDocs(collection(db, "blogs"));
+  //       let blogsdata = snapshot.docs.map((d) => {
+  //         return {
+  //           id: d.id,
+  //           ...d.data(),
+  //         };
+  //       });
+  //       console.log(blogsdata);
+  //       setStore(blogsdata);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
 
-    fetchData();
+  //   fetchData();
+  // }, []);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "blogs"), (snapshot) => {
+      const blogsdata = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+      console.log(blogsdata);
+      setStore(blogsdata);
+    });
+
+    // cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   const handleSubmit = (e) => {
