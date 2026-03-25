@@ -48,7 +48,7 @@ function Blog() {
     const unsubscribe = onSnapshot(collection(db, "blogs"), (snapshot) => {
       const blogsdata = snapshot.docs.map((d) => ({
         id: d.id,
-        ...d.data(),
+        ...d.data(),//orginal data
       }));
       console.log(blogsdata);
       setStore(blogsdata);
